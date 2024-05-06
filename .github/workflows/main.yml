@@ -21,7 +21,7 @@ jobs:
         run: npm run build    # i.e. "vite build"
 
       - name: Include Dockerfile and CapRover configuration
-        run: cp Dockerfile dist/ && cp captain-definition dist/
+        run: cp Dockerfile dist/ && cp captain-definition dist/  && default.conf dist/
 
       # Make a tarball of the dist/ folder for deployment
       # and also include the Dockerfile and CapRover configuration
