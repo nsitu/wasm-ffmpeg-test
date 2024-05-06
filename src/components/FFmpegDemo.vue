@@ -27,6 +27,7 @@
       async function transcode() {
         message.value = 'Loading ffmpeg-core.js'
         ffmpeg.on('log', ({ message: msg }: LogEvent) => {
+          console.log(msg)
           message.value = msg
         })
         await ffmpeg.load({
@@ -35,8 +36,12 @@
           workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript')
         })
         message.value = 'Start transcoding'
-        await ffmpeg.writeFile('test.avi', await fetchFile(videoURL))
-        await ffmpeg.exec(['-i', 'test.avi', 'test.mp4'])
+
+        await ffmpeg.writeFile('input.webm', await fetchFile('https://raw.githubusercontent.com/ffmpegwasm/testdata/master/Big_Buck_Bunny_180_10s.webm'));
+
+
+        // NOTE about threads: https://github.com/ffmpegwasm/ffmpeg.wasm/issues/597
+        await ffmpeg.exec(['-threads', '4', '-i', 'input.webm', 'test.mp4'])
         message.value = 'Complete transcoding'
         const data = await ffmpeg.readFile('test.mp4')
         video.value = URL.createObjectURL(new Blob([(data as Uint8Array).buffer], { type: 'video/mp4' }))
